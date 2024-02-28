@@ -96,6 +96,33 @@ class SingleLinkedList {
   }
 
   /**
+   * 根据索引移除元素
+   */
+  remove(index) {
+
+    if(index === 0) {
+      this.removeFirst();
+      return;
+    }
+
+    const prev = this.findNode(index - 1);
+
+    if(!prev) {
+      return false;
+    }
+
+    // 被移除的节点
+    const removeNode = prev.next;
+
+    if(!removeNode) {
+      return false;
+    }
+
+    prev.next = removeNode.next;
+
+  }
+
+  /**
    * 遍历打印
    */
   loopAll() {
