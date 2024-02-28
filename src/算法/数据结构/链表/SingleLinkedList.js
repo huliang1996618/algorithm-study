@@ -86,6 +86,16 @@ class SingleLinkedList {
   }
 
   /**
+   * 移除第一个元素
+   */
+  removeFirst() {
+    if(!this.header) {
+      return false;
+    }
+    this.header = this.header.next;
+  }
+
+  /**
    * 遍历打印
    */
   loopAll() {
@@ -99,12 +109,8 @@ class SingleLinkedList {
 
 const linkedList = new SingleLinkedList();
 
-linkedList.addLast(1);
-linkedList.addLast(2);
-linkedList.addLast(3);
-linkedList.addLast(4);
 
-linkedList.insert(0,3);
+linkedList.removeFirst();
 
 linkedList.loopAll();
 
