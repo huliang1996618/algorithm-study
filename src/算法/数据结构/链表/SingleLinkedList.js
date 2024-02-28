@@ -50,6 +50,44 @@ class SingleLinkedList {
     last.next = new Node(val, null);
   }
 
+  findNode(index) {
+    for(let i = 0, node = this.header; node.next !== null; node = node.next, i++) {
+      if (i === index) {
+        return node;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 根据索引获取元素值
+   */
+  get(index) {
+    const node = this.findNode(index);
+    if (node === null) {
+      return false;
+    }
+    return node.value;
+  }
+
+  /**
+   * 在索引位置插入新节点
+   */
+  insert(index,val) {
+    if (index === 0) {
+      this.addFirst(val);
+      return;
+    }
+    const prev = this.findNode(index - 1);
+    if (!prev) {
+      return false;
+    }
+    prev.next = new Node(val, prev.next);
+  }
+
+  /**
+   * 遍历打印
+   */
   loopAll() {
     let node = this.header;
     while(node) {
@@ -65,6 +103,8 @@ linkedList.addLast(1);
 linkedList.addLast(2);
 linkedList.addLast(3);
 linkedList.addLast(4);
+
+linkedList.insert(0,3);
 
 linkedList.loopAll();
 
