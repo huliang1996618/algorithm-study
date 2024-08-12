@@ -8,7 +8,11 @@ class Node {
 
 /**
  * 带哨兵的单向链表
+ * 修改函数如下
  * addLast
+ * addFirsts
+ * loopAll
+ * findNode
  */
 class SingleLinkedListWitehSentry {
   header;
