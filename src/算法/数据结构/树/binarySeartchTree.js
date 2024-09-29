@@ -21,6 +21,30 @@ export function binarySearchTree() {
     }
   };
 
+  binarySearchTree.prototype.put = function(node, key) {
+    let parent = null;
+    while (node !== null) {
+      parent = node;
+      if (key < node.key) {
+        node = node.left;
+      } else if (key > node.key) {
+        node = node.right;
+      } else {
+        // 更新
+        node.key = key;
+      }
+    }
+  
+    // 新增
+    const newNode = new Node(key);
+  
+    if (node.key < parent.key) {
+      parent.left = newNode;
+    } else {
+      parent.right = newNode;
+    }
+  };
+
   // 插入数据（内部使用）
   binarySearchTree.prototype.insertNode = function(node, newNode) {
     // 左侧插入
@@ -62,12 +86,12 @@ export function binarySearchTree() {
     }
   };
 
-  // 中序遍历（外部使用）
+  // 中序遍历-递归实现（外部使用）
   binarySearchTree.prototype.midOrderTravel = function (handler) {
-    this.preOrderTravelOrder(this.root, handler);
+    this.midOrderTravelOrder(this.root, handler);
   };
 
-  // 中序遍历（内部使用）
+  // 中序遍历-递归实现（内部使用）
   binarySearchTree.prototype.midOrderTravelOrder = function(node, handler) {
     // console.log('handler------', handler);
     if (node !== null) {
@@ -79,6 +103,25 @@ export function binarySearchTree() {
 
       // 递归处理右子节点
       this.midOrderTravelOrder(node.right, handler);
+    }
+  };
+
+  // 中序遍历非递归实现
+  binarySearchTree.prototype.midOrderTravalNormal = function(node, handler) {
+    const stack = []; // 记录父节点
+    while (node !== null || stack.length) {
+      // 前进遍历左侧
+      if (node !== null) {
+        stack.push(node);
+        node = node.left;
+      } else {
+        // 后退到父节点遍历右侧
+        const pop = stack.pop();
+        // 处理节点
+        handler(pop);
+        // 遍历右侧
+        node = pop.right;
+      }
     }
   };
 
@@ -162,7 +205,7 @@ export function binarySearchTree() {
     }
   };
 
-  // 删除key
+  // 删除操作1
   binarySearchTree.prototype.delete = function(key) {
     // 找到被删除的key
     let parent = null;
@@ -209,6 +252,48 @@ export function binarySearchTree() {
       binarySearchTree.prototype.shift(parent, current, s);
       s.left = current.left;
     }
+  };
+
+
+  // 删除操作2：递归删除
+  binarySearchTree.prototype.loopDelete = function(key) {
+    this.root = this.loopDeleteFunc(this.root, key);
+  };
+
+  /**
+   * 
+   * @param {*} node 删除的起点
+   * @param {*} key 被删除的key值
+   * return 被删除节点的孩子
+   */
+  this.loopDeleteFunc = function(node,key) {
+    if (node === null) {
+      return null;
+    }
+    if (key < node.key) {
+      node.left = this.loopDeleteFunc(node.left,key);
+      return node;
+    }
+    if (key > node.key) {
+      node.right = this.loopDeleteFunc(node.right, key);
+      return node;
+    }
+    // 情况1：只有右孩子
+    if (node.left === null) {
+      return node.right;
+    }
+    // 情况2：只有左孩子
+    if (node.right === null) {
+      return node.left;
+    }
+    // 情况3：有右孩子和左孩子
+    // 找到后继节点
+    let s = node.right;
+    while(s.left) {
+      s = s.left;
+    }
+    s.right = this.loopDeleteFunc(node.right,s.key);
+    s.left = node.left;
   };
 
   // 查找前任：如果有子节点，则为左子树最大值，如果没有子节点，则为自左而来的最近祖宗节点
@@ -260,7 +345,74 @@ export function binarySearchTree() {
 
     return ancestorFromRight ? ancestorFromRight.key : null;
   };
+
+  // 范围查找： 中序遍历为升序
+  // 找小于key的所有key
+  binarySearchTree.prototype.less = function(key) {
+    const result = [];
+    let p = this.root;
+    const stack = [];
+    while(p !== null || !!stack.length) {
+      if (p !== null) {
+        stack.push(p);
+        p = p.left;
+      } else {
+        const pop = stack.pop();
+        // 处理值
+        if (pop.key < key) {
+          result.push(pop.key);
+        } else {
+          break;
+        } 
+        p = pop.right;
+      }
+    }
+  };
+  // 找大于key的所有value
+  binarySearchTree.prototype.greater = function(key) {
+    const result = [];
+    let p = this.root;
+    const stack = [];
+    while(p !== null || !!stack.length) {
+      if (p !== null) {
+        stack.push(p);
+        p = p.left;
+      } else {
+        const pop = stack.pop();
+        // 处理值
+        if (pop.key > key) {
+          result.push(pop.key);
+        } 
+        p = pop.right;
+      }
+    }
+  };
+  // 找到大于等于key1且小于等于key2的所有值
+  binarySearchTree.prototype.between = function(key1,key2) {
+    const result = [];
+    let p = this.root;
+    const stack = [];
+    while(p !== null || !!stack.length) {
+      if (p !== null) {
+        stack.push(p);
+        p = p.left;
+      } else {
+        const pop = stack.pop();
+        // 处理值
+        if (pop.key >= key1 && pop.key <= key2) {
+          result.push(pop.key);
+        } else if (pop.key > key2) {
+          break;
+        }
+        p = pop.right;
+      }
+    }
+  };
+
+
 }
+
+
 
 
 const bst = new binarySearchTree();
@@ -276,7 +428,7 @@ bst.insert(8);
 bst.insert(9);
 bst.insert(10);
 
-bst.delete(8);
+bst.loopDelete(8);
 
 let resultString = '';
 bst.postOrderTravel(function (key) {
