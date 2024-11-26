@@ -1,21 +1,26 @@
 function shellSort(array) {
-  for(let gap = Math.floor(array.length / 2); gap > 0; gap = Math.floor(gap / 2)) {
-    // 从第gap个元素开始使用直接插入法排序
-    for(let i = gap; i < array.length; i++) {
-      let j = i
-      let insertValue = array[j] // 暂存下插入值
-      while(j - gap >=0 && insertValue < array[j - gap]) {
-        // 元素后移
-        array[j] = array[j - gap]
-        j-=gap
+  for (
+    let gap = Math.floor(array.length / 2);
+    gap > 0;
+    gap = Math.floor(gap / 2)
+  ) {
+    // [0....pendingIndex - 1][pendingIndex,...array.length - 1]
+    for (
+      let pendingIndex = gap;
+      pendingIndex < array.length;
+      pendingIndex += gap
+    ) {
+      const pending = array[pendingIndex]; // 待插入元素
+      let insertedIndex = pendingIndex - gap; // 已排序元素
+      while (insertedIndex >= 0 && pending < array[insertedIndex]) {
+        array[insertedIndex + gap] = array[insertedIndex];
+        insertedIndex -= gap;
       }
-      // 找到插入位置
-      array[j] = insertValue
+      array[insertedIndex + gap] = pending;
     }
   }
-  console.log(array)
 }
 
-const array = [8,5,4,2,3,1]
-shellSort(array)
-
+const array = [5, 4, 3, 2, 1];
+shellSort(array);
+console.log(array);

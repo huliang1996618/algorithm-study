@@ -16,7 +16,7 @@ export function Heap() {
     // 2x + 1 = size - 1 => x = size / 2 - 1
     const index = Math.floor(this.size / 2 - 1);
     for (let i = index; i >= 0; i--) {
-      this.down(i);
+      this.downLoop(i);
     }
   };
 
@@ -37,7 +37,7 @@ export function Heap() {
     this.swap(index, this.size - 1);
     this.array.pop();
     this.size--;
-    this.down(index);
+    this.downLoop(index);
     return deleted;
   };
 
@@ -50,15 +50,15 @@ export function Heap() {
     this.swap(0, this.size - 1);
     this.array.pop();
     this.size--;
-    this.down(0);
+    this.downLoop(0);
     return top;
   };
 
   /**
-   * 下潜，找到左右子节点，并和最大的子节点交换
+   * 下潜(递归版本)，找到左右子节点，并和最大的子节点交换
    * @param {*} parent
    */
-  this.down = function (parent) {
+  this.downLoop = function (parent) {
     const left = 2 * parent + 1;
     const right = left + 1;
     let max = parent;
@@ -72,7 +72,37 @@ export function Heap() {
     }
     if (max !== parent) {
       this.swap(max, parent);
-      this.down(max);
+      this.downLoop(max);
+    }
+  };
+
+  /**
+   * 下潜（非递归）
+   */
+  this.down = function (parent) {
+    let flag = true;
+    while (flag) {
+      const left = 2 * parent + 1;
+      const right = left + 1;
+      let max = parent;
+
+      if (left < this.size && this.array[left] > this.array[max]) {
+        max = left;
+      }
+
+      if (right < this.size && this.array[right] > this.array[max]) {
+        max = right;
+      }
+
+      // 没有比parent更大的
+      if (max === parent) {
+        flag = false;
+        break;
+      }
+
+      // 有比parent更大的
+      this.swap(max, parent);
+      parent = max;
     }
   };
 
@@ -82,7 +112,7 @@ export function Heap() {
    */
   this.replace = function (replaced) {
     this.array[0] = replaced;
-    this.down(0);
+    this.downLoop(0);
   };
 
   /**
